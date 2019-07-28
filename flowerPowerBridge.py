@@ -36,7 +36,7 @@ def getSamples(device, cloudUser, dataBLE):
 
   dataBLE.historyNbEntries = device.getHistoryNbEntries()
   dataBLE.historyLastEntryIndex = device.getHistoryLastEntryIdx()
-  
+
   dataBLE.historyCurrentSessionId = device.getHistoryCurrentSessionID()
   dataBLE.historyCurrentSessionPeriod = device.getHistoryCurrentSessionPeriod()
   dataBLE.historyCurrentSessionStartIdx = device.getHistoryCurrentSessionStartIdx()
@@ -285,11 +285,14 @@ def main(argv):
       global cloudUser
       cloudUser = cloud.concatJson(cloudUserConfig, cloudGarden)
 
+  print "Cloud Login"
   cloud.login(credentials, loginCallback)
 
+  print "Flower discover All"
   scanner = FlowerPowerScanner()
   devices = scanner.discoverAll()
 
+  print "Cloud get User Versions"
   cloud.getUserVersions(None, getUserCallback)
 
   if devices is not None:
