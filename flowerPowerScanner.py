@@ -20,8 +20,10 @@ class FlowerPowerScanner:
     self.scanner = Scanner()
 
   def _discover(self, duration=1):
+    print "Scanner: discover"
     devices = self.scanner.scan(duration)
     if devices is None:
+      print "Scanner: No devices found"
       return None
 
     flowerPowerDevices = []
@@ -30,7 +32,7 @@ class FlowerPowerScanner:
 
       deviceInformation = DeviceInformation()
       deviceInformation.localName    = device.getValueText(9) #Complete Local Name
-      
+
       flags        = device.getValueText(1) #Flags
       if flags is not None:
         deviceInformation.flags        = int(flags, 16)
@@ -42,15 +44,17 @@ class FlowerPowerScanner:
 
       uuid = device.getValueText(6) #Incomplete 128b Services
       if uuid is not None:
-        uuid = "".join(reversed([uuid[i:i+2] for i in range(0, len(uuid), 2)]))
+        #uuid = "".join(reversed([uuid[i:i+2] for i in range(0, len(uuid), 2)]))
         deviceInformation.uuid       = UUID(uuid)
 
         if deviceInformation.localName is None:
           deviceInformation.localName = 'Flower power {}'.format(uuid[0:4])
 
       if deviceInformation.uuid is not None:
-        #print deviceInformation.uuid
-        #print SCAN_UUIDS[0]
+
+        print "Found", deviceInformation.localName, deviceInformation.uuid
+        print SCAN_UUIDS[0]
+
         if deviceInformation.uuid in SCAN_UUIDS:
           alreadyAdded = False
           #for flower in flowerPowerDevices:
@@ -61,7 +65,7 @@ class FlowerPowerScanner:
           if alreadyAdded is False:
             flower = FlowerPower(deviceInformation)
 
-            print "Found Flower:", flower
+            print "Scanner: Found Flower:", flower
             flowerPowerDevices.append(flower)
 
     if len(flowerPowerDevices) == 0:
@@ -77,7 +81,7 @@ class FlowerPowerScanner:
     return devices[0]
 
   def discoverAll(self):
-    devices = self._discover(2)
+    devices = self._discover(20)
     if devices is None:
       return None
 
