@@ -130,7 +130,7 @@ def main(argv):
 
         if location["fertilizer"]["gauge_values"]["current_value"] is not None:
           flower["fertilizer"] = ("Fertilizer",  float(location["fertilizer"]["gauge_values"]["current_value"]))
-          flower["fertilizer_status"] = ["Fertilizer Status", str(location["fertilizer"]["instruction_key"]).replace("fertilizer", ""), ["good", "too_low", "too_high"]]
+          flower["fertilizer_status"] = ["Fertilizer Status", str(location["fertilizer"]["instruction_key"]).replace("fertilizer_", ""), ["good", "too_low", "too_high"]]
 
         if location["light"]["gauge_values"]["current_value"] is not None:
           flower["light"] = ("Light",  float(location["light"]["gauge_values"]["current_value"]))
