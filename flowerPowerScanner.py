@@ -19,7 +19,7 @@ class FlowerPowerScanner:
   def __init__(self):
     self.scanner = Scanner()
 
-  def _discover(self, duration=1):
+  def _discover(self, duration=1, filter=None):
     print "Scanner: discover"
     devices = self.scanner.scan(duration)
     if devices is None:
@@ -29,6 +29,14 @@ class FlowerPowerScanner:
     flowerPowerDevices = []
     for device in devices:
       #print device.getScanData()
+
+      manufactureId = "{}{}{}".format(device.addr[0:2], device.addr[3:5], device.addr[6:8]).upper()
+      uniqueId = "{}{}".format(device.addr[-5:-3], device.addr[-2:]).upper()
+
+      if filter is not None:
+        print uniqueId.upper(), "?", filter.upper(), "RSSI", device.rssi
+        if uniqueId.upper() != filter.upper():
+          continue
 
       deviceInformation = DeviceInformation()
       deviceInformation.localName    = device.getValueText(9) #Complete Local Name
@@ -73,12 +81,12 @@ class FlowerPowerScanner:
 
     return flowerPowerDevices
 
-  def discover(self):
-    devices = self._discover(1)
+  def discover(self, filter):
+    devices = self._discover(1, filter)
     if devices is None:
       return None
 
-    return devices[0]
+    return devices
 
   def discoverAll(self):
     devices = self._discover(20)
