@@ -251,6 +251,7 @@ def main(argv):
   cloud = FlowerPowerCloud()
 
   credentials = json.load(open('credentials.json'))
+  credentials = credentials['flowerpower']
   credentials['auto-refresh'] = False
 
   def loginCallback(self, err, res):
