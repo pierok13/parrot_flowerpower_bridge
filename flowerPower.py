@@ -139,7 +139,7 @@ class FlowerPower:
     return False
 
   def __str__(self):
-    str = '{{uuid: "{}", name: "{}"}}'.format(self.uuid, self.name)
+    str = '{{addr: "{}", uuid: "{}", name: "{}"}}'.format(self._deviceInformation.addr, self.uuid, self.name)
     return str
 
 ################

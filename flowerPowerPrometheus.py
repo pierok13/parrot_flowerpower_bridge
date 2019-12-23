@@ -106,6 +106,9 @@ def main(argv):
           deviceSensor = sensor
 
       print "deviceSensor", deviceSensor
+      if deviceSensor is None:
+        continue
+
       sensorId = str(deviceSensor["name"][-4:].lower())
 
       devicePlant = None
@@ -121,11 +124,12 @@ def main(argv):
           battery      = device.readBatteryLevel()
 
           try:
-            temperature  = device.readCalibratedAirTemperature()
+            temperature = device.readCalibratedAirTemperature()
             if temperature == 0.0:
-              temperature  = device.readAirTemperature()
+              temperature = device.readAirTemperature()
           except:
             device.connectAndSetup()
+            temperature = None
 
           try:
             #conductivity = device.readCalibratedEcPorous() #readCalibratedEcb
@@ -133,22 +137,25 @@ def main(argv):
             conductivity = device.readSoilElectricalConductivity()
           except:
             device.connectAndSetup()
+            conductivity = None
 
           try:
-            light        = device.readCalibratedSunlight()
+            light = device.readCalibratedSunlight()
             if light == 0.0:
-              light        = device.readSunlight()
+              light = device.readSunlight()
           except:
             device.connectAndSetup()
+            light = None
 
           try:
-            moisture     = device.readCalibratedSoilMoisture()
+            moisture = device.readCalibratedSoilMoisture()
             if moisture == 0.0:
-              moisture     = device.readSoilMoisture()
+              moisture = device.readSoilMoisture()
           except:
             device.connectAndSetup()
+            moisture = None
 
-          if battery > 0 and moisture > 0.0:
+          if battery is not None and battery > 0 and moisture is not None and moisture > 0.0:
             dataToPrometheus(sensorId, battery, temperature, conductivity, light, moisture, configuration, plant, influxDbClient)
 
           time.sleep(0.2)
@@ -157,9 +164,6 @@ def dataToPrometheus(sensorId, battery, temperature, conductivity, light, moistu
   flower = {}
 
   #flower["plant_name"] = ("Plant", devicePlant["name"])
-
-  if battery is not None:
-    flower["battery"] = ("Battery", battery)
 
   if battery is not None:
     flower["battery"] = ("Battery", int(battery))
@@ -222,9 +226,12 @@ def dataToPrometheus(sensorId, battery, temperature, conductivity, light, moistu
 
     print "Pushing", sensorId, ":", configuration["prometheuspush-prefix"] + '_' + key + '_total', "=", flower[key]
 
-  push_to_gateway(configuration["prometheuspush-server"] + ":" + configuration["prometheuspush-port"], 
-    job=configuration["prometheuspush-client"] + "_" + sensorId, 
-    registry=registry)
+  try:
+    push_to_gateway(configuration["prometheuspush-server"] + ":" + configuration["prometheuspush-port"], 
+      job=configuration["prometheuspush-client"] + "_" + sensorId, 
+      registry=registry)
+  except:
+    print "Prometheus not available"
 
   influxDbJson = [
   {
@@ -240,7 +247,10 @@ def dataToPrometheus(sensorId, battery, temperature, conductivity, light, moistu
     influxDbJson[0]["fields"][key] = flower[key][1]
 
   print "Pushing", influxDbJson
-  influxDbClient.write_points(influxDbJson, retention_policy=configuration["influxdb-policy"])
+  try:
+    influxDbClient.write_points(influxDbJson, retention_policy=configuration["influxdb-policy"])
+  except:
+    print "Influxdb not available"
 
 if __name__ == "__main__":
   main(sys.argv)
