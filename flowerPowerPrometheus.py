@@ -117,11 +117,22 @@ def main(argv):
           if plant.has_key("name") and plant["name"] == deviceSensor["plant-name"]:
             devicePlant = plant
 
+            if deviceSensor.has_key("location"):
+              devicePlant["location"] = deviceSensor["location"]
+
       print "devicePlant", devicePlant
 
       if devicePlant is not None:
         if device.connectAndSetup() is True:
           battery      = device.readBatteryLevel()
+
+          try:
+            moisture = device.readCalibratedSoilMoisture()
+            if moisture == 0.0:
+              moisture = device.readSoilMoisture()
+          except:
+            device.connectAndSetup()
+            moisture = None
 
           try:
             temperature = device.readCalibratedAirTemperature()
@@ -147,14 +158,6 @@ def main(argv):
             device.connectAndSetup()
             light = None
 
-          try:
-            moisture = device.readCalibratedSoilMoisture()
-            if moisture == 0.0:
-              moisture = device.readSoilMoisture()
-          except:
-            device.connectAndSetup()
-            moisture = None
-
           if battery is not None and battery > 0 and moisture is not None and moisture > 0.0:
             dataToPrometheus(sensorId, battery, temperature, conductivity, light, moisture, configuration, plant, influxDbClient)
 
@@ -164,6 +167,9 @@ def dataToPrometheus(sensorId, battery, temperature, conductivity, light, moistu
   flower = {}
 
   #flower["plant_name"] = ("Plant", devicePlant["name"])
+
+  flower["plant"] = ("Plant", str(plant["name"]))
+  flower["location"] = ("Location", str(plant["location"]))
 
   if battery is not None:
     flower["battery"] = ("Battery", int(battery))
@@ -211,12 +217,13 @@ def dataToPrometheus(sensorId, battery, temperature, conductivity, light, moistu
   for key in flower.keys():
 
     if type(flower[key][1]) is str:
-      e = Enum(configuration["prometheuspush-prefix"]  + '_' + key + '_total', 
-        flower[key][0], ['sensorid'],
-        states=flower[key][2],
-        registry=registry)
+      if len(flower[key]) == 3:
+        e = Enum(configuration["prometheuspush-prefix"]  + '_' + key + '_total', 
+          flower[key][0], ['sensorid'],
+          states=flower[key][2],
+          registry=registry)
 
-      e.labels(sensorid=sensorId).state(flower[key][1])
+        e.labels(sensorid=sensorId).state(flower[key][1])
     else:
       g = Gauge(configuration["prometheuspush-prefix"]  + '_' + key + '_total', 
         flower[key][0], ['sensorid'],
