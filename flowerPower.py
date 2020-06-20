@@ -165,6 +165,7 @@ class FlowerPower:
         #print val
         val = binascii.unhexlify(val)
         #print val
+        print "readDataCharacteristic", serviceUuid, characteristicUuid, val
         return val
     except BTLEException, ex:
       print "BTLE Exception", ex
@@ -185,6 +186,7 @@ class FlowerPower:
         val = ch.read()
         val = val[:val.index('\0')]
         #print "String", [hex(ord(c)) for c in val]
+        print "readStringCharacteristic", serviceUuid, characteristicUuid, val
         return val
     except BTLEException, ex:
       print "BTLE Exception", ex
@@ -200,7 +202,7 @@ class FlowerPower:
       return None
 
     val = struct.unpack(STRUCT_String, val)[0]
-    print "readStringCharacteristic", characteristicUuid, val
+    print "readStringCharacteristic2", serviceUuid, characteristicUuid, val
 
     return val
 
@@ -217,7 +219,7 @@ class FlowerPower:
       return None
 
     val = struct.unpack(STRUCT_Float, val)[0]
-    print "readFloatLECharacteristic", characteristicUuid, val
+    print "readFloatLECharacteristic", serviceUuid, characteristicUuid, val
 
     return val
 
