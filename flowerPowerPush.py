@@ -32,7 +32,7 @@ def main(argv):
   if configuration.has_key("mqtt"):
     try:
       if configuration["mqtt"].has_key("client") is False:
-        configuration["mqtt"]["client"] = "Ruuvi-Mqtt"
+        configuration["mqtt"]["client"] = "Miflora-Mqtt"
 
       if configuration["mqtt"].has_key("server") is False:
         configuration["mqtt"]["server"] = "127.0.0.1"
@@ -41,7 +41,7 @@ def main(argv):
         configuration["mqtt"]["port"] = 1883
 
       if configuration["mqtt"].has_key("prefix") is False:
-        configuration["mqtt"]["prefix"] = "weather"
+        configuration["mqtt"]["prefix"] = "flower"
 
       if configuration["mqtt"].has_key("enabled") is False:
         configuration["mqtt"]["enabled"] = True
@@ -69,10 +69,10 @@ def main(argv):
         configuration["prometheuspush"]["port"] = 9091
 
       if configuration["prometheuspush"].has_key("client") is False:
-        configuration["prometheuspush"]["client"] = "Ruuvi-Prometheus"
+        configuration["prometheuspush"]["client"] = "Miflora-Prometheus"
 
       if configuration["prometheuspush"].has_key("prefix") is False:
-        configuration["prometheuspush"]["prefix"] = "weather"
+        configuration["prometheuspush"]["prefix"] = "flower"
 
       if configuration["prometheuspush"].has_key("enabled") is False:
         configuration["prometheuspush"]["enabled"] = True
@@ -94,7 +94,7 @@ def main(argv):
   if configuration.has_key("influxdb"):
     try:
       if configuration["influxdb"].has_key("client") is False:
-        configuration["influxdb"]["client"] = "Ruuvi-Influxdb"
+        configuration["influxdb"]["client"] = "Miflora-Influxdb"
 
       if configuration["influxdb"].has_key("server") is False:
         configuration["influxdb"]["server"] = "127.0.0.1"
@@ -112,7 +112,7 @@ def main(argv):
         configuration["influxdb"]["database"] = "measurements"
 
       if configuration["influxdb"].has_key("policy") is False:
-        configuration["influxdb"]["policy"] = "sensor"
+        configuration["influxdb"]["policy"] = "flower"
 
       if configuration["influxdb"].has_key("prefix") is False:
         configuration["influxdb"]["prefix"] = "weather"
