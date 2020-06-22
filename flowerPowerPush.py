@@ -32,7 +32,7 @@ def main(argv):
   if configuration.has_key("mqtt"):
     try:
       if configuration["mqtt"].has_key("client") is False:
-        configuration["mqtt"]["client"] = "Miflora-Mqtt"
+        configuration["mqtt"]["client"] = "Flowerpower-Mqtt"
 
       if configuration["mqtt"].has_key("server") is False:
         configuration["mqtt"]["server"] = "127.0.0.1"
@@ -69,7 +69,7 @@ def main(argv):
         configuration["prometheuspush"]["port"] = 9091
 
       if configuration["prometheuspush"].has_key("client") is False:
-        configuration["prometheuspush"]["client"] = "Miflora-Prometheus"
+        configuration["prometheuspush"]["client"] = "Flowerpower-Prometheus"
 
       if configuration["prometheuspush"].has_key("prefix") is False:
         configuration["prometheuspush"]["prefix"] = "flower"
@@ -94,7 +94,7 @@ def main(argv):
   if configuration.has_key("influxdb"):
     try:
       if configuration["influxdb"].has_key("client") is False:
-        configuration["influxdb"]["client"] = "Miflora-Influxdb"
+        configuration["influxdb"]["client"] = "Flowerpower-Influxdb"
 
       if configuration["influxdb"].has_key("server") is False:
         configuration["influxdb"]["server"] = "127.0.0.1"
