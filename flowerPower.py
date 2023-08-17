@@ -125,15 +125,15 @@ class FlowerPower:
       self.flags.isStarting = True
 
   def connectAndSetup(self):
-    print "Connecting to", self.uuid, self._deviceInformation.addr
+    print ("Connecting to", self.uuid, self._deviceInformation.addr)
     for i in range(0,10):
       try:
         ADDR_TYPE_PUBLIC = "public"
         self.peripheral = Peripheral(self._deviceInformation.addr, ADDR_TYPE_PUBLIC)
         return True
-      except BTLEException, ex:
+      except BTLEException as ex:
         if i == 10:
-          print "BTLE Exception", ex
+          print ("BTLE Exception", ex)
         continue
 
     return False
@@ -150,10 +150,10 @@ class FlowerPower:
       if (ch.supportsRead()):
         val = ch.read()
         return val
-    except BTLEException, ex:
-      print "BTLE Exception", ex
+    except BTLEException as ex:
+      print ("BTLE Exception", ex)
 
-    print "Error on readCharacteristic"
+    print ("Error on readCharacteristic")
     return None
 
   def readDataCharacteristic(self, serviceUuid, characteristicUuid):
@@ -165,12 +165,12 @@ class FlowerPower:
         #print val
         val = binascii.unhexlify(val)
         #print val
-        print "readDataCharacteristic", serviceUuid, characteristicUuid, val
+        print ("readDataCharacteristic", serviceUuid, characteristicUuid, val)
         return val
-    except BTLEException, ex:
-      print "BTLE Exception", ex
+    except BTLEException as ex:
+      print ("BTLE Exception", ex)
 
-    print "Error on readCharacteristic"
+    print ("Error on readCharacteristic")
     return None
 
   def writeDataCharacteristic(self, serviceUuid, characteristicUuid, value):
@@ -184,25 +184,25 @@ class FlowerPower:
       ch = self.peripheral.getCharacteristics(uuid=characteristicUuid)[0]
       if (ch.supportsRead()):
         val = ch.read()
-        val = val[:val.index('\0')]
+        val = val[:val.index(0)]
         #print "String", [hex(ord(c)) for c in val]
-        print "readStringCharacteristic", serviceUuid, characteristicUuid, val
+        print ("readStringCharacteristic", serviceUuid, characteristicUuid, val)
         return val
-    except BTLEException, ex:
-      print "BTLE Exception", ex
+    except BTLEException as ex:
+      print ("BTLE Exception", ex)
 
-    print "Error on readCharacteristic"
+    print ("Error on readCharacteristic")
     return None
 
 
   def readStringCharacteristic2(self, serviceUuid, characteristicUuid):
     val = self.readDataCharacteristic(serviceUuid, characteristicUuid)
     if val is None:
-      print "Error on readCharacteristic", characteristicUuid
+      print ("Error on readCharacteristic", characteristicUuid)
       return None
 
     val = struct.unpack(STRUCT_String, val)[0]
-    print "readStringCharacteristic2", serviceUuid, characteristicUuid, val
+    print ("readStringCharacteristic2", serviceUuid, characteristicUuid, val)
 
     return val
 
@@ -215,11 +215,11 @@ class FlowerPower:
   def readFloatLECharacteristic(self, serviceUuid, characteristicUuid):
     val = self.readDataCharacteristic(serviceUuid, characteristicUuid)
     if val is None:
-      print "Error on readCharacteristic", characteristicUuid
+      print ("Error on readCharacteristic", characteristicUuid)
       return None
 
     val = struct.unpack(STRUCT_Float, val)[0]
-    print "readFloatLECharacteristic", serviceUuid, characteristicUuid, val
+    print ("readFloatLECharacteristic", serviceUuid, characteristicUuid, val)
 
     return val
 
@@ -237,7 +237,7 @@ class FlowerPower:
     if serialNumber is None:
       return "unknown"
 
-    print serialNumber
+    print (serialNumber)
     return serialNumber
 
   def readFirmwareRevision(self):
@@ -486,7 +486,7 @@ class FlowerPower:
     soilWet = False
 
     def __init__(self, value):
-      print "StatusFlags", value
+      print ("StatusFlags", value)
 
       if (value & 1) == 1:
         self.soilDry = True
@@ -545,7 +545,7 @@ class FlowerPower:
     return char.getHandle() 
 
   def onWaitingAck(self):
-    print "onWaitingAck"
+    print ("onWaitingAck")
 
     success = True
     #for idx in range(self.currentIdx, self.currentIdx+128):
@@ -560,8 +560,8 @@ class FlowerPower:
     if success is True:
       self.currentIdx += 128;
 
-      print "currentIdx", self.currentIdx
-      print "nbTotalBuffers", self.nbTotalBuffers
+      print ("currentIdx", self.currentIdx)
+      print ("nbTotalBuffers", self.nbTotalBuffers)
 
       if self.currentIdx >= self.nbTotalBuffers:
 
@@ -584,9 +584,9 @@ class FlowerPower:
       self.writeRxStatus(FlowerPower.RxStatusEnum.NACK)
 
   def onTxStatusChange(self, data):
-    print "onTxStatusChange", [hex(ord(c)) for c in data]
+    print ("onTxStatusChange", [hex(ord(c)) for c in data])
     self.txStatus = struct.unpack('<B', data)[0]
-    print "txStatus", self.txStatus
+    print ("txStatus", self.txStatus)
 
     if self.txStatus == FlowerPower.TxStatusEnum.WAITING_ACK:
       self.onWaitingAck()
@@ -595,24 +595,24 @@ class FlowerPower:
       if self.historyFile != None: # and type(this.historyFile) != 'undefined':
         #this.finishCallback(None, self.historyFile.toString('base64'));
         #return
-        print "Transfer finished"
+        print ("Transfer finished")
       else:
         #this.finishCallback(Error("Transfer failed", None));
-        print "Transfer failed"
+        print ("Transfer failed")
 
       self.transmissionInProgress = False
 
   def setFileLength(self, fileLength):
-    print "setFileLength", fileLength
+    print ("setFileLength", fileLength)
     self.fileLength = fileLength
     self.nbTotalBuffers = int(math.ceil(self.fileLength / self.bufferLength) + 1)
 
     self.buffers = [None] * (self.nbTotalBuffers + 1)
 
-    print "setFileLength", self.fileLength, self.nbTotalBuffers
+    print ("setFileLength", self.fileLength, self.nbTotalBuffers)
 
   def readFirstBuffer(self, buffer):
-    print "readFirstBuffer", [hex(ord(c)) for c in buffer]
+    print ("readFirstBuffer", [hex(ord(c)) for c in buffer])
     self.bufferLength = len(buffer)
 
     fileLength = struct.unpack('<I', buffer[0:4])[0]
@@ -620,30 +620,30 @@ class FlowerPower:
 
 
   def onTxBufferReceived(self, data):
-    print "onTxBufferReceived", [hex(ord(c)) for c in data]
+    print ("onTxBufferReceived", [hex(ord(c)) for c in data])
     buffer = FlowerPower.UploadBuffer(data)
     self.buffers[buffer.idx] = buffer.data
     if buffer.idx == 0:
       self.readFirstBuffer(buffer.data)
 
   def notifyTxStatus(self):
-    print "notifyTxStatus"
+    print ("notifyTxStatus")
     self.notifyCharacteristic(UPLOAD_SERVICE_UUID, UPLOAD_TX_STATUS_UUID, True)
 
   def notifyTxBuffer(self):
-    print "notifyTxBuffer"
+    print ("notifyTxBuffer")
     self.notifyCharacteristic(UPLOAD_SERVICE_UUID, UPLOAD_TX_BUFFER_UUID, True)
 
   def unnotifyTxStatus(self):
-    print "unnotifyTxStatus"
+    print ("unnotifyTxStatus")
     self.notifyCharacteristic(UPLOAD_SERVICE_UUID, UPLOAD_TX_STATUS_UUID, False)
 
   def unnotifyTxBuffer(self):
-    print "unnotifyTxBuffer"
+    print ("unnotifyTxBuffer")
     self.notifyCharacteristic(UPLOAD_SERVICE_UUID, UPLOAD_TX_BUFFER_UUID, False)
 
   def writeRxStatus(self, rxStatus):
-    print "writeRxStatus", rxStatus
+    print ("writeRxStatus", rxStatus)
     rxStatusBuff = struct.pack(STRUCT_UInt8LE, rxStatus)
 
     self.writeDataCharacteristic(UPLOAD_SERVICE_UUID, UPLOAD_RX_STATUS_UUID, rxStatusBuff);
